@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "WindowsExerciseWeek5 (Package)": {
+      "commandName": "MsixPackage"
+    },
+    "WindowsExerciseWeek5 (Unpackaged)": {
+      "commandName": "Project"
+    }
+  }
+}
