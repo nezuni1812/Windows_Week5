@@ -41,7 +41,7 @@ namespace WindowsExerciseWeek5
             {
                 Width = Config.Width,
                 Height = Config.Height,
-                Tag = 1,
+                Tag = new Tuple<int, int>(99,100),
 
             };
 
@@ -51,7 +51,7 @@ namespace WindowsExerciseWeek5
             {
                 Width = Config.Width,
                 Height = Config.Height,
-                Tag = 2,
+                Tag = new Tuple<int, int>(101, 102),
             };
 
             button02.Click += Button_Click;
@@ -60,7 +60,7 @@ namespace WindowsExerciseWeek5
             {
                 Width = Config.Width,
                 Height = Config.Height,
-                Tag = 3,
+                Tag = new Tuple<int, int>(105, 106),
             };
 
             button03.Click += Button_Click;
@@ -69,7 +69,7 @@ namespace WindowsExerciseWeek5
             {
                 Width = Config.Width,
                 Height = Config.Height,
-                Tag = 4,
+                Tag = new Tuple<int, int>(109, 110),
             };
 
             button04.Click += Button_Click;
@@ -92,8 +92,16 @@ namespace WindowsExerciseWeek5
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             var button = (sender as Button)!;
-            int number = (int)button.Tag;
-            Title = number.ToString();
+            //int number = (int)button.Tag;
+            var (x,y) = (Tuple<int,int>)button.Tag;
+            Title = $"{x} - {y}";
         }
+        
+        //Thang Thua Hoa
+        //Dung mang 3 3
+        // 1 -> X 
+        // 2 -> O 
+        //Moi 1 nut bam luu lai toa do X Y cua no -> Su dung Class hoac Point hoac Tuple
+        //Danh het 9 o thi Hoa
     }
 }
