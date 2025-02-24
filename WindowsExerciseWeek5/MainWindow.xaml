@@ -10,7 +10,17 @@
     Title="TicTacToe"
     Activated="Window_Activated">
 
-    <Canvas x:Name="container">
-        
-    </Canvas>
+    <Grid>
+        <StackPanel Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="10">
+            <TextBlock Text="Chọn Mức Độ Khó:" FontSize="16" FontWeight="Bold" Margin="0,0,0,10"/>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                <Button x:Name="btnEasy" Content="Easy" Click="SetDifficulty_Click" Tag="Easy" Margin="5"/>
+                <Button x:Name="btnMedium" Content="Medium" Click="SetDifficulty_Click" Tag="Medium" Margin="5"/>
+                <Button x:Name="btnHard" Content="Hard" Click="SetDifficulty_Click" Tag="Hard" Margin="5"/>
+                <Button Content="New Game" Click="ResetGame_Click" Margin="0,20,0,0"/>
+            </StackPanel>
+        </StackPanel>
+
+        <Canvas x:Name="container" Width="200" Height="200" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,100,0,0"/>
+    </Grid>
 </Window>

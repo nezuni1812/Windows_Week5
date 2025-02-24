@@ -1,7 +1,9 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
+using System.Threading.Tasks;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Microsoft.UI;
 using Microsoft.UI.Xaml;
@@ -18,16 +20,15 @@ using Windows.Foundation.Collections;
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
 
+
 namespace WindowsExerciseWeek5
 {
-    /// <summary>
-    /// An empty window that can be used on its own or navigated to within a Frame.
-    /// </summary>
     public sealed partial class MainWindow : Window
     {
         public MainWindow()
         {
             this.InitializeComponent();
+            InitializeGameBoard();
         }
 
         class Config
@@ -39,15 +40,67 @@ namespace WindowsExerciseWeek5
 
         public int[,] Board = new int[3, 3];
         public int Player = 1;
+        public string SelectedDifficulty = "Easy"; // Mặc định là Easy
+        private dynamic aiModule = null;
+        private Type aiType = null;
+        private object aiInstance = null;
+        private MethodInfo getNextMoveMethod = null;
+
+        private void SetDifficulty_Click(object sender, RoutedEventArgs e)
+        {
+            var button = sender as Button;
+            if (button != null)
+            {
+                SelectedDifficulty = button.Tag.ToString();
+                Title = $"TicTacToe - {SelectedDifficulty} Mode";
+                LoadDifficultyDll();
+            }
+        }
+
+        private void LoadDifficultyDll()
+        {
+            string folder = AppDomain.CurrentDomain.BaseDirectory;
+            var dllFiles = new DirectoryInfo(folder).GetFiles("*.dll");
+
+            foreach (var file in dllFiles)
+            {
+                if (file.Name.StartsWith(SelectedDifficulty, StringComparison.OrdinalIgnoreCase))
+                {
+                    try
+                    {
+                        var assembly = Assembly.LoadFrom(file.FullName);
+                        var types = assembly.GetTypes();
+
+                        // Find a type that has GetNextMove method
+                        foreach (var type in types)
+                        {
+                            var method = type.GetMethod("GetNextMove");
+                            if (method != null)
+                            {
+                                aiType = type;
+                                aiInstance = Activator.CreateInstance(type);
+                                getNextMoveMethod = method;
+                                Title = $"Loaded {file.Name}";
+                                return;
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Title = $"Error loading {file.Name}: {ex.Message}";
+                    }
+                }
+            }
+        }
+
         public int CheckWinner(int[,] Board)
         {
             for (int i = 0; i < 3; i++)
             {
                 if (Board[i, 0] != 0 && Board[i, 0] == Board[i, 1] && Board[i, 1] == Board[i, 2])
-                    return Board[i, 0]; 
-
+                    return Board[i, 0];
                 if (Board[0, i] != 0 && Board[0, i] == Board[1, i] && Board[1, i] == Board[2, i])
-                    return Board[0, i]; 
+                    return Board[0, i];
             }
 
             if (Board[0, 0] != 0 && Board[0, 0] == Board[1, 1] && Board[1, 1] == Board[2, 2])
@@ -59,107 +112,44 @@ namespace WindowsExerciseWeek5
             foreach (int cell in Board)
             {
                 if (cell == 0)
-                    return 0; 
+                    return 0;
             }
 
-            return -1; 
+            return -1;
         }
-
 
         private void Window_Activated(object sender, WindowActivatedEventArgs e)
         {
-            var button01 = new Button()
+            // Only initialize the game once on first activation
+            if (aiInstance == null)
             {
-                Width = Config.Width,
-                Height = Config.Height,
-                Tag = new Tuple<int, int>(0, 0),
-            };
-            button01.Click += Button_Click;
-            container.Children.Add(button01);
+                LoadDifficultyDll();
+                InitializeGameBoard();
+            }
+        }
 
-            var button02 = new Button()
-            {
-                Width = Config.Width,
-                Height = Config.Height,
-                Tag = new Tuple<int, int>(0, 1),
-            };
-            button02.Click += Button_Click;
-            container.Children.Add(button02);
-            Canvas.SetLeft(button02, Config.Width + Config.Margin);
+        private void InitializeGameBoard()
+        {
+            container.Children.Clear();
+            Board = new int[3, 3];
+            Player = 1;
 
-            var button03 = new Button()
+            for (int i = 0; i < 3; i++)
             {
-                Width = Config.Width,
-                Height = Config.Height,
-                Tag = new Tuple<int, int>(0, 2),
-            };
-            button03.Click += Button_Click;
-            container.Children.Add(button03);
-            Canvas.SetLeft(button03, 2 * Config.Width + 2 * Config.Margin);
-
-            var button04 = new Button()
-            {
-                Width = Config.Width,
-                Height = Config.Height,
-                Tag = new Tuple<int, int>(1, 0),
-            };
-            button04.Click += Button_Click;
-            container.Children.Add(button04);
-            Canvas.SetTop(button04, Config.Height + Config.Margin);
-
-            var button05 = new Button()
-            {
-                Width = Config.Width,
-                Height = Config.Height,
-                Tag = new Tuple<int, int>(1, 1),
-            };
-            button05.Click += Button_Click;
-            container.Children.Add(button05);
-            Canvas.SetLeft(button05, Config.Width + Config.Margin);
-            Canvas.SetTop(button05, Config.Height + Config.Margin);
-
-            var button06 = new Button()
-            {
-                Width = Config.Width,
-                Height = Config.Height,
-                Tag = new Tuple<int, int>(1, 2),
-            };
-            button06.Click += Button_Click;
-            container.Children.Add(button06);
-            Canvas.SetLeft(button06, 2 * Config.Width + 2 * Config.Margin);
-            Canvas.SetTop(button06, Config.Height + Config.Margin);
-
-            var button07 = new Button()
-            {
-                Width = Config.Width,
-                Height = Config.Height,
-                Tag = new Tuple<int, int>(2, 0),
-            };
-            button07.Click += Button_Click;
-            container.Children.Add(button07);
-            Canvas.SetTop(button07, 2 * Config.Height + 2 * Config.Margin);
-
-            var button08 = new Button()
-            {
-                Width = Config.Width,
-                Height = Config.Height,
-                Tag = new Tuple<int, int>(2, 1),
-            };
-            button08.Click += Button_Click;
-            container.Children.Add(button08);
-            Canvas.SetLeft(button08, Config.Width + Config.Margin);
-            Canvas.SetTop(button08, 2 * Config.Height + 2 * Config.Margin);
-
-            var button09 = new Button()
-            {
-                Width = Config.Width,
-                Height = Config.Height,
-                Tag = new Tuple<int, int>(2, 2),
-            };
-            button09.Click += Button_Click;
-            container.Children.Add(button09);
-            Canvas.SetLeft(button09, 2 * Config.Width + 2 * Config.Margin);
-            Canvas.SetTop(button09, 2 * Config.Height + 2 * Config.Margin);
+                for (int j = 0; j < 3; j++)
+                {
+                    var button = new Button()
+                    {
+                        Width = Config.Width,
+                        Height = Config.Height,
+                        Tag = new Tuple<int, int>(i, j),
+                    };
+                    button.Click += Button_Click;
+                    container.Children.Add(button);
+                    Canvas.SetLeft(button, j * (Config.Width + Config.Margin));
+                    Canvas.SetTop(button, i * (Config.Height + Config.Margin));
+                }
+            }
         }
 
         private async void Button_Click(object sender, RoutedEventArgs e)
@@ -168,66 +158,171 @@ namespace WindowsExerciseWeek5
             if (button == null || button.Tag == null) return;
 
             var (x, y) = (Tuple<int, int>)button.Tag;
-            Title = $"{x} - {y}";
 
-            if (Board != null && Board.GetLength(0) > x && Board.GetLength(1) > y)
+            if (Board[x, y] == 0)
             {
+                // Human player move (Player 1)
                 Board[x, y] = Player;
-                //button.Content = Player == 1 ? "X" : "O";
 
-                if (Player == 2)
+                button.Content = new FontIcon()
                 {
-                    button.Content = new FontIcon() //O
-                    {
-                        Glyph = "\uEA3F",
-                        FontSize = 23,
-                        Foreground = new SolidColorBrush(Colors.Red),
-                    };
-                }
-                else //Player == 1
-                {
-                    button.Content = new FontIcon() //X
-                    {
-                        Glyph = "\uE894",
-                        FontSize = 25,
-                        Foreground = new SolidColorBrush(Colors.Blue),
-                    };
-                }
-
-                
-            }
-
-            Player = Player == 1 ? 2 : 1;
-
-            int winner = CheckWinner(Board);
-            if (winner == 1 || winner == 2)
-            {
-                var dialog = new ContentDialog
-                {
-                    Title = "Result",
-                    Content = $"Player {winner} wins!",
-                    CloseButtonText = "OK",
-                    XamlRoot = this.Content.XamlRoot,
-
+                    Glyph = Player == 1 ? "\uE894" : "\uEA3F",
+                    FontSize = 25,
+                    Foreground = new SolidColorBrush(Player == 1 ? Colors.Blue : Colors.Red),
                 };
 
-                await dialog.ShowAsync();
-            }
-            else if (winner == -1)
-            {
-                var dialog = new ContentDialog
+                // Check if the game is over after human move
+                int winner = CheckWinner(Board);
+                if (winner != 0)
                 {
-                    Title = "Result",
-                    Content = "It's a draw!",
-                    CloseButtonText = "OK",
-                    XamlRoot = this.Content.XamlRoot,
-                };
+                    await ShowGameOverDialog(winner);
+                    return;
+                }
 
-                await dialog.ShowAsync();
+                // Switch to computer player
+                Player = 2;
+
+                // Perform computer move
+                MakeComputerMove();
             }
+        }
+
+        private async void MakeComputerMove()
+        {
+            if (getNextMoveMethod != null && aiInstance != null)
+            {
+                try
+                {
+                    Title = "AI is thinking...";
+
+                    var result = getNextMoveMethod.Invoke(aiInstance, new object[] { Board, Player });
+
+                    // Ép kiểu ValueTuple đúng cách
+                    if (result is (int x, int y))
+                    {
+                        Title = "AI move received";
+
+                        // Kiểm tra nước đi hợp lệ
+                        if (x >= 0 && x < 3 && y >= 0 && y < 3 && Board[x, y] == 0)
+                        {
+                            Board[x, y] = Player;
+
+                            foreach (var child in container.Children)
+                            {
+                                if (child is Button btn && btn.Tag is Tuple<int, int> tag)
+                                {
+                                    if (tag.Item1 == x && tag.Item2 == y)
+                                    {
+                                        btn.Content = new FontIcon()
+                                        {
+                                            Glyph = "\uEA3F", // Ký tự của máy
+                                            FontSize = 25,
+                                            Foreground = new SolidColorBrush(Colors.Red),
+                                        };
+                                        break;
+                                    }
+                                }
+                            }
+
+                            int winner = CheckWinner(Board);
+                            if (winner != 0)
+                            {
+                                await ShowGameOverDialog(winner);
+                                return;
+                            }
+                        }
+                        else
+                        {
+                            Title = "AI returned invalid move";
+                        }
+                    }
+                    else
+                    {
+                        Title = "AI returned invalid move";
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Title = $"AI Error: {ex.Message}";
+                }
+            }
+            else
+            {
+                Title = "Fallback to random move";
+                MakeRandomMove();
+            }
+
+            Player = 1; // Quay lại lượt của người chơi
         }
 
 
 
+        private void MakeRandomMove()
+        {
+            // Find empty cells
+            List<Tuple<int, int>> emptyCells = new List<Tuple<int, int>>();
+            for (int i = 0; i < 3; i++)
+            {
+                for (int j = 0; j < 3; j++)
+                {
+                    if (Board[i, j] == 0)
+                        emptyCells.Add(new Tuple<int, int>(i, j));
+                }
+            }
+
+            if (emptyCells.Count > 0)
+            {
+                // Choose a random empty cell
+                Random random = new Random();
+                int index = random.Next(emptyCells.Count);
+                var (x, y) = emptyCells[index];
+
+                // Update the board
+                Board[x, y] = Player;
+
+                // Find and update the button
+                foreach (var child in container.Children)
+                {
+                    if (child is Button button && button.Tag is Tuple<int, int> tag)
+                    {
+                        if (tag.Item1 == x && tag.Item2 == y)
+                        {
+                            button.Content = new FontIcon()
+                            {
+                                Glyph = "\uEA3F", // Computer's symbol
+                                FontSize = 25,
+                                Foreground = new SolidColorBrush(Colors.Red),
+                            };
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        private async Task ShowGameOverDialog(int winner)
+        {
+            string message = winner == -1 ? "It's a draw!" : $"Player {winner} wins!";
+            var dialog = new ContentDialog
+            {
+                Title = "Game Over",
+                Content = message,
+                CloseButtonText = "OK",
+                PrimaryButtonText = "New Game",
+                XamlRoot = this.Content.XamlRoot,
+            };
+
+            var result = await dialog.ShowAsync();
+
+            if (result == ContentDialogResult.Primary)
+            {
+                InitializeGameBoard();
+            }
+        }
+
+        private void ResetGame_Click(object sender, RoutedEventArgs e)
+        {
+            InitializeGameBoard();
+        }
     }
 }
