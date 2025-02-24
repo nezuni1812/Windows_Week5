@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using Microsoft.UI;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
@@ -172,7 +173,28 @@ namespace WindowsExerciseWeek5
             if (Board != null && Board.GetLength(0) > x && Board.GetLength(1) > y)
             {
                 Board[x, y] = Player;
-                button.Content = Player == 1 ? "X" : "O";
+                //button.Content = Player == 1 ? "X" : "O";
+
+                if (Player == 2)
+                {
+                    button.Content = new FontIcon() //O
+                    {
+                        Glyph = "\uEA3F",
+                        FontSize = 23,
+                        Foreground = new SolidColorBrush(Colors.Red),
+                    };
+                }
+                else //Player == 1
+                {
+                    button.Content = new FontIcon() //X
+                    {
+                        Glyph = "\uE894",
+                        FontSize = 25,
+                        Foreground = new SolidColorBrush(Colors.Blue),
+                    };
+                }
+
+                
             }
 
             Player = Player == 1 ? 2 : 1;
