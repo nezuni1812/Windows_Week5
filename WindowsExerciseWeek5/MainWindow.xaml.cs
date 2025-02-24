@@ -28,9 +28,72 @@ namespace WindowsExerciseWeek5
             this.InitializeComponent();
         }
 
-        private void myButton_Click(object sender, RoutedEventArgs e)
+        class Config
         {
-            myButton.Content = "Clicked";
+            public const int Margin = 5;
+            public const int Width = 50;
+            public const int Height = 50;
+        };
+
+        private void Window_Activated(object sender, WindowActivatedEventArgs e)
+        {
+            var button01 = new Button()
+            {
+                Width = Config.Width,
+                Height = Config.Height,
+                Tag = 1,
+
+            };
+
+            button01.Click += Button_Click;
+
+            var button02 = new Button()
+            {
+                Width = Config.Width,
+                Height = Config.Height,
+                Tag = 2,
+            };
+
+            button02.Click += Button_Click;
+
+            var button03 = new Button()
+            {
+                Width = Config.Width,
+                Height = Config.Height,
+                Tag = 3,
+            };
+
+            button03.Click += Button_Click;
+
+            var button04 = new Button()
+            {
+                Width = Config.Width,
+                Height = Config.Height,
+                Tag = 4,
+            };
+
+            button04.Click += Button_Click;
+
+            container.Children.Add(button01);
+            
+            Canvas.SetLeft(button02, Config.Width + Config.Margin);
+
+            Canvas.SetTop(button03, Config.Height + Config.Margin);
+            Canvas.SetLeft(button03, Config.Width + Config.Margin);
+
+            Canvas.SetTop(button04, Config.Height + Config.Margin);
+            //Canvas.SetLeft(button04, Config.Width + Config.Margin);
+
+            container.Children.Add(button02);
+            container.Children.Add(button03);
+            container.Children.Add(button04);
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            var button = (sender as Button)!;
+            int number = (int)button.Tag;
+            Title = number.ToString();
         }
     }
 }
