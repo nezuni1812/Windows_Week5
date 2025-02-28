@@ -11,16 +11,50 @@
     Activated="Window_Activated">
 
     <Grid>
+        
         <StackPanel Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="10">
-            <TextBlock Text="Chọn Mức Độ Khó:" FontSize="16" FontWeight="Bold" Margin="0,0,0,10"/>
+            <StackPanel Orientation="Horizontal">
+                <TextBlock HorizontalAlignment="Center" VerticalAlignment="Top" Text="TicTacToe Game | Current Mode:" FontSize="23" FontWeight="Bold" Margin="0,10,0,10"/>
+                <TextBlock x:Name="currentMode" HorizontalAlignment="Center" VerticalAlignment="Top" Text="Easy" FontSize="23" FontWeight="Bold" Margin="5,10,0,10"/>
+            </StackPanel>
+            
+            <TextBlock Text="Choose Mode:" FontSize="16" FontWeight="Bold" Margin="0,0,0,10"/>
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                 <Button x:Name="btnEasy" Content="Easy" Click="SetDifficulty_Click" Tag="Easy" Margin="5"/>
                 <Button x:Name="btnMedium" Content="Medium" Click="SetDifficulty_Click" Tag="Medium" Margin="5"/>
                 <Button x:Name="btnHard" Content="Hard" Click="SetDifficulty_Click" Tag="Hard" Margin="5"/>
-                <Button Content="New Game" Click="ResetGame_Click" Margin="0,20,0,0"/>
             </StackPanel>
         </StackPanel>
 
-        <Canvas x:Name="container" Width="200" Height="200" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,100,0,0"/>
+        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,0,0">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Grid Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center">
+                        <TextBlock x:Name="txtLeft" Text="You" FontSize="14" Padding="0,0,2,5" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        <FontIcon x:Name="iconLeft" Glyph="&#xE894;" FontSize="70" Foreground="Blue" HorizontalAlignment="Center" VerticalAlignment="Center" Opacity="0.3"/>
+                    </Grid>
+
+                    <Canvas Grid.Column="1" x:Name="container" Width="170" Height="170" Margin="20,0,20,0"/>
+
+                    <Grid Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Center">
+                        <TextBlock x:Name="txtRight" Text="Bot" FontSize="14" Padding="0,0,2,5" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        <FontIcon x:Name="iconRight" Glyph="&#xEA3F;" FontSize="70" Foreground="Red" HorizontalAlignment="Center" VerticalAlignment="Center" Opacity="0.3"/>
+                    </Grid>
+                </Grid>
+            </StackPanel>
+
+            <Button Click="ResetGame_Click" HorizontalAlignment="Center" Margin="0,10,0,0">
+                <StackPanel Orientation="Horizontal">
+                    <FontIcon Glyph="&#xE72C;" FontSize="16" Margin="0,0,5,0"/>
+                    <TextBlock Text="New Game" FontWeight="SemiBold"/>
+                </StackPanel>
+            </Button>
+        </StackPanel>
     </Grid>
 </Window>

@@ -40,7 +40,7 @@ namespace WindowsExerciseWeek5
 
         public int[,] Board = new int[3, 3];
         public int Player = 1;
-        public string SelectedDifficulty = "Easy"; // Mặc định là Easy
+        public string SelectedDifficulty = "Easy";
         private dynamic aiModule = null;
         private Type aiType = null;
         private object aiInstance = null;
@@ -48,10 +48,12 @@ namespace WindowsExerciseWeek5
 
         private void SetDifficulty_Click(object sender, RoutedEventArgs e)
         {
+            InitializeGameBoard();
             var button = sender as Button;
             if (button != null)
             {
                 SelectedDifficulty = button.Tag.ToString();
+                currentMode.Text = SelectedDifficulty;
                 Title = $"TicTacToe - {SelectedDifficulty} Mode";
                 LoadDifficultyDll();
             }
@@ -71,7 +73,6 @@ namespace WindowsExerciseWeek5
                         var assembly = Assembly.LoadFrom(file.FullName);
                         var types = assembly.GetTypes();
 
-                        // Find a type that has GetNextMove method
                         foreach (var type in types)
                         {
                             var method = type.GetMethod("GetNextMove");
@@ -161,12 +162,11 @@ namespace WindowsExerciseWeek5
 
             if (Board[x, y] == 0)
             {
-                // Human player move (Player 1)
                 Board[x, y] = Player;
 
                 button.Content = new FontIcon()
                 {
-                    Glyph = Player == 1 ? "\uE894" : "\uEA3F",
+                    Glyph = Player == 1 ? "\uE894" : "\uEA3F", //You: X , Bot: O
                     FontSize = 25,
                     Foreground = new SolidColorBrush(Player == 1 ? Colors.Blue : Colors.Red),
                 };
@@ -197,12 +197,11 @@ namespace WindowsExerciseWeek5
 
                     var result = getNextMoveMethod.Invoke(aiInstance, new object[] { Board, Player });
 
-                    // Ép kiểu ValueTuple đúng cách
                     if (result is (int x, int y))
                     {
                         Title = "AI move received";
 
-                        // Kiểm tra nước đi hợp lệ
+                        // Check valid moves
                         if (x >= 0 && x < 3 && y >= 0 && y < 3 && Board[x, y] == 0)
                         {
                             Board[x, y] = Player;
@@ -215,7 +214,7 @@ namespace WindowsExerciseWeek5
                                     {
                                         btn.Content = new FontIcon()
                                         {
-                                            Glyph = "\uEA3F", // Ký tự của máy
+                                            Glyph = "\uEA3F", //Ky tu O
                                             FontSize = 25,
                                             Foreground = new SolidColorBrush(Colors.Red),
                                         };
@@ -252,7 +251,7 @@ namespace WindowsExerciseWeek5
                 MakeRandomMove();
             }
 
-            Player = 1; // Quay lại lượt của người chơi
+            Player = 1; 
         }
 
 

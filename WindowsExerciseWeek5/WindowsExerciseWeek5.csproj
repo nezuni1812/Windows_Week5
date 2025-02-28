@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
 	<OutputType>WinExe</OutputType>
 	<TargetFramework>net9.0-windows10.0.19041</TargetFramework>
@@ -41,6 +41,20 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.26100.1742" />
     <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.6.250205002" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="Easy">
+      <HintPath>..\Easy\bin\Debug\net8.0-windows10.0.19041.0\Easy.dll</HintPath>
+    </Reference>
+    <Reference Include="Hard">
+      <HintPath>..\Hard\bin\Debug\net8.0-windows10.0.19041.0\Hard.dll</HintPath>
+    </Reference>
+    <Reference Include="Medium">
+      <HintPath>..\Medium\bin\Debug\net8.0-windows10.0.19041.0\Medium.dll</HintPath>
+    </Reference>
+    <Reference Include="Mode">
+      <HintPath>..\Mode\bin\Debug\net8.0-windows10.0.19041.0\Mode.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
   <!--
